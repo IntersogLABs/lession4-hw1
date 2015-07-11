@@ -13,23 +13,35 @@
 
 	<script type="text/javascript">
 		function forEach(arr, iterator){
-			
+			arr.reduce(function(accum, value, index, arr) {
+				iterator(value, index, arr)
+			})
 		}
 
 		function map(arr, mapper){
 			
+			return arr.reduce(function(map, value, index, arr) {
+				return map.concat( mapper(value, index, arr) )
+			}, [])
+			
 		}
 
 		function filter(arr, predicate){
-			
+			return arr.reduce(function(filterArr, value, index, arr){
+				return predicate(value, index, arr) ? filterArr.concat(value) : filterArr
+			}, [])
 		}
 
 		function some(arr, predicate){
-			
+			return arr.reduce(function(condition, value, index, arr){
+				return predicate(value, index, arr) || condition
+			},false)
 		}
 
 		function every(arr, predicate){
-			
+			return arr.reduce(function(condition, value, index, arr){
+				return predicate(value, index, arr) && condition
+			},true)
 		}
 
 		window.onload = function(){
@@ -85,17 +97,16 @@
 			}
 			var getPersonSummary = function(man, i, arr) { // This is mapper
 				return man.name.toUpperCase() + " is " + man.age + " year old and his phone# is " + man.phone;
-			})
-
+			}
 			// Test forEach
 			forEach(people, function(man, i, arr) {
 				console.log(man.name)
-			};
+			});
 
-			// console.log(map(person, getPersonSummary));
-			// console.log(filter(person, isAdult));
-			// console.log(some(person, isAdult));
-			// console.log(every(person, isAdult));
+			console.log(map(people, getPersonSummary));
+			console.log(filter(people, isAdult));
+			console.log(some(people, isAdult));
+			console.log(every(people, isAdult));
 		}
 	</script>
 </head>
