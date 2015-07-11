@@ -19,29 +19,43 @@
 		}
 
 		function map(arr, mapper){
-			
 			return arr.reduce(function(map, value, index, arr) {
 				return map.concat( mapper(value, index, arr) )
 			}, [])
 			
 		}
 
-		function filter(arr, predicate){
+		function filter(arr, predicate) {
 			return arr.reduce(function(filterArr, value, index, arr){
 				return predicate(value, index, arr) ? filterArr.concat(value) : filterArr
 			}, [])
 		}
 
-		function some(arr, predicate){
+		function some(arr, predicate) {
 			return arr.reduce(function(condition, value, index, arr){
 				return predicate(value, index, arr) || condition
 			},false)
 		}
 
-		function every(arr, predicate){
+		function every(arr, predicate) {
 			return arr.reduce(function(condition, value, index, arr){
 				return predicate(value, index, arr) && condition
 			},true)
+		}
+
+		//own reduce
+		function reduce(arr, callback, initialValue) {
+			initialValue = initialValue || 0;
+
+			function accumulate(index, accum) {
+				if(index === arr.length - 1) {
+					return callback(accum, arr[index], index, arr)
+				} else {
+					return accumulate(index + 1, callback(accum, arr[index], index, arr) )
+				}
+			}
+
+			return accumulate(0, initialValue);
 		}
 
 		window.onload = function(){
@@ -107,6 +121,21 @@
 			console.log(filter(people, isAdult));
 			console.log(some(people, isAdult));
 			console.log(every(people, isAdult));
+
+			//own reduce tests
+			var arr = [1,2,3,4];
+			console.log(reduce(arr, function(sum, value, i, arr){
+				return sum + value;
+			}));
+
+			console.log(reduce(people, function(olderPeople, person, i, arr){
+				return person.age >= 35 ? olderPeople.concat(person) : olderPeople
+			}, []));
+
+			console.log(reduce(people, function(accum, person, i, arr){
+				console.log('its my reduce! '+ person.name);
+			}));
+
 		}
 	</script>
 </head>
