@@ -19,7 +19,10 @@
 		}
 
 		function map(arr, mapper){
-			
+						return arr.reduce (function (ac, it, index, array){
+				ac.push(mapper(it, index, array))
+				return ac
+			},[])
 		}
 
 		function filter(arr, predicate){
@@ -94,7 +97,7 @@
 				console.log(man.name)
 			});
 
-			// console.log(map(people, getPersonSummary));
+			console.log(map(people, getPersonSummary));
 			// console.log(filter(people, isAdult));
 			// console.log(some(people, isAdult));
 			// console.log(every(people, isAdult));
