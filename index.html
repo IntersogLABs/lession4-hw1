@@ -43,7 +43,12 @@
 		}
 
 		function every(arr, predicate){
-			
+			return arr.reduce (function (ac, it, index, array){
+				if(ac && predicate(it, index, array)){
+					return true
+				}
+				return false
+			},true)
 		}
 
 		window.onload = function(){
@@ -109,7 +114,7 @@
 			console.log(map(people, getPersonSummary));
 			console.log(filter(people, isAdult));
 			console.log(some(people, isAdult));
-			// console.log(every(people, isAdult));
+			console.log(every(people, isAdult));
 		}
 	</script>
 </head>
