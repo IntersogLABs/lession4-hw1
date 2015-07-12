@@ -13,25 +13,59 @@
 
 	<script type="text/javascript">
 		function forEach(arr, iterator){
-			
+			reduce(arr,function (ac, it, index, array){
+				iterator(it, index, array)
+			})
 		}
 
 		function map(arr, mapper){
-			
+			return reduce (arr, function (ac, it, index, array){
+				ac.push(mapper(it, index, array))
+				return ac
+			},[])
 		}
 
 		function filter(arr, predicate){
-			
+			return reduce(arr, function (ac, it, index, array){
+				if(predicate(it, index, array)){
+					ac.push(it)}
+					return ac
+				},[])
 		}
 
 		function some(arr, predicate){
-			
+			return reduce(arr, function (ac, it, index, array){
+				if(!ac && !predicate(it, index, array)){
+					return false
+				}
+				return true
+			},false)
 		}
 
 		function every(arr, predicate){
-			
+			return reduce(arr, function (ac, it, index, array){
+				if(ac && predicate(it, index, array)){
+					return true
+				}
+				return false
+			},true)
 		}
 
+		function reduce (arr, iterator, initialValue, index) {
+			if (typeof index === "undefined") { 
+				index = 0
+			};
+			if(index >= arr.length) {
+				return initialValue
+			}
+			if(typeof initialValue === "undefined" && 0 == index) {
+				initialValue = arr[index]
+			}
+			else{
+				initialValue = iterator(initialValue, arr[index], index, arr)
+			}
+			return reduce(arr, iterator, initialValue, index+1)
+		}
 		window.onload = function(){
 			var people = [
 				{
@@ -85,17 +119,17 @@
 			}
 			var getPersonSummary = function(man, i, arr) { // This is mapper
 				return man.name.toUpperCase() + " is " + man.age + " year old and his phone# is " + man.phone;
-			})
+			}
 
 			// Test forEach
 			forEach(people, function(man, i, arr) {
 				console.log(man.name)
-			};
+			});
 
-			// console.log(map(person, getPersonSummary));
-			// console.log(filter(person, isAdult));
-			// console.log(some(person, isAdult));
-			// console.log(every(person, isAdult));
+			console.log(map(people, getPersonSummary));
+			console.log(filter(people, isAdult));
+			console.log(some(people, isAdult));
+			console.log(every(people, isAdult));
 		}
 	</script>
 </head>
