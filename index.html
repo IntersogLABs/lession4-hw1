@@ -59,6 +59,9 @@
 
 		function newValue(initialValue, item, i, arr, callback){
 			if (i == 0){
+				if (initialValue === undefined){
+					return arr[0];
+				}
 				return callback(initialValue, item, i, arr);
 			}
 			else if (i == 1 && initialValue === undefined){
