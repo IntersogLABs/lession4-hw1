@@ -13,20 +13,20 @@
 
 	<script type="text/javascript">
 		function forEach(arr, iterator){
-			arr.reduce(function (ac, it, index, array){
+			reduce(arr,function (ac, it, index, array){
 				iterator(it, index, array)
 			})
 		}
 
 		function map(arr, mapper){
-			return arr.reduce (function (ac, it, index, array){
+			return reduce (arr, function (ac, it, index, array){
 				ac.push(mapper(it, index, array))
 				return ac
 			},[])
 		}
 
 		function filter(arr, predicate){
-			return arr.reduce (function (ac, it, index, array){
+			return reduce(arr, function (ac, it, index, array){
 				if(predicate(it, index, array)){
 					ac.push(it)}
 					return ac
@@ -34,7 +34,7 @@
 		}
 
 		function some(arr, predicate){
-			return arr.reduce (function (ac, it, index, array){
+			return reduce(arr, function (ac, it, index, array){
 				if(!ac && !predicate(it, index, array)){
 					return false
 				}
@@ -43,7 +43,7 @@
 		}
 
 		function every(arr, predicate){
-			return arr.reduce (function (ac, it, index, array){
+			return reduce(arr, function (ac, it, index, array){
 				if(ac && predicate(it, index, array)){
 					return true
 				}
@@ -51,6 +51,21 @@
 			},true)
 		}
 
+		function reduce (arr, iterator, initialValue, index) {
+			if (typeof index === "undefined") { 
+				index = 0
+			};
+			if(index >= arr.length) {
+				return initialValue
+			}
+			if(typeof initialValue === "undefined" && 0 == index) {
+				initialValue = arr[index]
+			}
+			else{
+				initialValue = iterator(initialValue, arr[index], index, arr)
+			}
+			return reduce(arr, iterator, initialValue, index+1)
+		}
 		window.onload = function(){
 			var people = [
 				{
