@@ -13,23 +13,64 @@
 
 	<script type="text/javascript">
 		function forEach(arr, iterator){
-			
+			arr.reduce(function(value, item, i, arr){
+				iterator(item, i, arr);
+			}, 0)
 		}
 
 		function map(arr, mapper){
-			
+			result = arr.reduce(function(newArray, item){
+				newArray.push(mapper(item));
+				return newArray;
+			}, [])
+			return result
 		}
 
 		function filter(arr, predicate){
-			
+			result = arr.reduce(function(newArray, item){
+				if (predicate(item)){
+					newArray.push(item);
+				}
+				return newArray;
+			}, [])
+			return result
 		}
 
 		function some(arr, predicate){
-			
+			result = arr.reduce(function(some, item){
+				return some || predicate(item);
+			}, false)
+			return result
 		}
 
 		function every(arr, predicate){
-			
+			result = arr.reduce(function(every, item){
+				return every && predicate(item);
+			}, true)
+			return result
+		}
+
+		function reduce(arr, callback, initialValue){
+			if (arr.length == 0){
+				return initialValue;
+			}
+			return newValue(initialValue, arr[arr.length - 1], arr.length - 1, arr, callback);
+		}
+
+		function newValue(initialValue, item, i, arr, callback){
+			if (i == 0){
+				if (initialValue === undefined){
+					return arr[0];
+				}
+				return callback(initialValue, item, i, arr);
+			}
+			else if (i == 1 && initialValue === undefined){
+				return callback(arr[0], item, i, arr);
+			}
+			else {
+				var value = newValue(initialValue, arr[i-1], i-1, arr, callback);
+				return callback(value, item, i, arr);
+			}
 		}
 
 		window.onload = function(){
@@ -85,17 +126,21 @@
 			}
 			var getPersonSummary = function(man, i, arr) { // This is mapper
 				return man.name.toUpperCase() + " is " + man.age + " year old and his phone# is " + man.phone;
-			})
+			}
 
 			// Test forEach
 			forEach(people, function(man, i, arr) {
 				console.log(man.name)
-			};
+			});
 
-			// console.log(map(person, getPersonSummary));
-			// console.log(filter(person, isAdult));
-			// console.log(some(person, isAdult));
-			// console.log(every(person, isAdult));
+			console.log(map(people, getPersonSummary));
+			console.log(filter(people, isAdult));
+			console.log(some(people, isAdult));
+			console.log(every(people, isAdult));
+
+			var a = [1,2,3,4];
+			console.log(a.reduce(function(value, item){return value+item},5));
+			console.log(reduce(a, function(value, item){return value+item},5));
 		}
 	</script>
 </head>
