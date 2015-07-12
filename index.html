@@ -34,7 +34,12 @@
 		}
 
 		function some(arr, predicate){
-			
+			return arr.reduce (function (ac, it, index, array){
+				if(!ac && !predicate(it, index, array)){
+					return false
+				}
+				return true
+			},false)
 		}
 
 		function every(arr, predicate){
@@ -103,7 +108,7 @@
 
 			console.log(map(people, getPersonSummary));
 			console.log(filter(people, isAdult));
-			// console.log(some(people, isAdult));
+			console.log(some(people, isAdult));
 			// console.log(every(people, isAdult));
 		}
 	</script>
