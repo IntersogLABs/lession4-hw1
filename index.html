@@ -12,14 +12,30 @@
 
 
 	<script type="text/javascript">
-		function forEach(arr, iterator){
+	function forEach(arr, iterator){
+			if(!Array.isArray(arr)){
+				return "need array"
+			}
+
+			arr.reduce(function(previousValue, currentValue, index, array){
+				iterator(currentValue, index, array)
+			});
+
 			
 		}
 
 		function map(arr, mapper){
+			if(!Array.isArray(arr)||typeof mapper != 'function' ){
+				return "need array and function"
+			}
+			var newArr = [];
+			arr.reduce(function(previousValue, currentValue, index, array){
+				return newArr.push(mapper(currentValue));
+				
+			});	
+			return newArr;
 			
 		}
-
 		function filter(arr, predicate){
 			
 		}
