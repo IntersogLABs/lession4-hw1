@@ -14,12 +14,9 @@
 	<script type="text/javascript">
 		function reduce(array, callback, initialValue){
 			if (array.length === 0 && initialValue !== undefined) { return initialValue; }
-			var array = array.filter(function(item){return item !== undefined});
-			// Removing undefined elements from array.
-			// I'm not sure if it corresponds ECMA-262 but it allowes to alvoid errors based on undefined elements calculation.
 			if (array.length === 1 && initialValue === undefined){ return array[0]; }
 			if (array.length === 0 && initialValue === undefined) { throw TypeError }
-			// Input limitations correspond Array.prototype.reduce() specification on MDN site except removing undefined elements.
+			// Input limitations correspond Array.prototype.reduce() specification on MDN site.
 			
 			var previousValue, index;	
 			// var names correspond Array.prototype.reduce() specification on MDN site.
@@ -36,10 +33,15 @@
 
 			function reduceInner(previousValue, index, callback){
 				var currentValue = array[index];
+				previousValue = (currentValue === undefined) ? previousValue : callback(previousValue, currentValue, index, array);
+
 				if (index === array.length - 1) {
-					return callback(previousValue, currentValue, index, array);
+					if (previousValue === undefined) {
+						throw TypeError;						
+					} else{
+						return previousValue;
+					};
 				} else{
-					previousValue = callback(previousValue, currentValue, index, array);
 					return reduceInner(previousValue, ++index, callback);
 				};
 			}
