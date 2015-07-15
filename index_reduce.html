@@ -12,46 +12,41 @@
 
 
 	<script type="text/javascript">
-		function forEach(arr, iterator){
-			if (arr.length === 0) { return arr; };
-			arr.reduce(function(prevReturn, item, index, arr){
-				iterator(item, index, arr);
-			}, 0) 
-		}
+		function reduce(array, callback, initialValue){
+			if (array.length === 0 && initialValue !== undefined) { return initialValue; }
+			if (array.length === 1 && initialValue === undefined){ return array[0]; }
+			if (array.length === 0 && initialValue === undefined) { throw TypeError }
+			// Input limitations correspond Array.prototype.reduce() specification on MDN site.
+			
+			var previousValue, index;	
+			// var names correspond Array.prototype.reduce() specification on MDN site.
+			
+			if (initialValue === undefined) {
+				previousValue = array[0];
+				index = 1;
+			} else{
+				previousValue = initialValue;
+				index = 0;
+			};
+			
+			return reduceInner(previousValue, index, callback);
 
-		function map(arr, mapper){
-			if (arr.length === 0) { return arr; };
-			return arr.reduce(function(result, item, index, arr){
-				result.push(mapper(item, index, arr));
-				return result;
-			}, []) 
-		}
+			function reduceInner(previousValue, index, callback){
+				var currentValue = array[index];
+				previousValue = (currentValue === undefined) ? previousValue : callback(previousValue, currentValue, index, array);
 
-		function filter(arr, predicate){
-			if (arr.length === 0) { return arr; }
-			return arr.reduce(function(result, item, index, arr) {
-				if (predicate(item, index, arr)) {
-					result.push(item);
+				if (index === array.length - 1) {
+					if (previousValue === undefined) {
+						throw TypeError;						
+					} else{
+						return previousValue;
+					};
+				} else{
+					return reduceInner(previousValue, ++index, callback);
 				};
-				return result;
-			}, [])
+			}
 		}
 
-		function some(arr, predicate){
-			if (arr.length === 0) { return arr; };
-			return arr.reduce(function(result, item, index, arr) {
-//				console.log( "item= " + item + ";  result= " + result + ";  pred: " + predicate(item, index, arr) + ";  res= " + result||predicate(item, index, arr));
-				return result = result || predicate(item, index, arr);
-			}, false)
-		}
-
-		function every(arr, predicate){
-			if (arr.length === 0) { return arr; };
-			return arr.reduce(function(result, item, index, arr) {
-//				console.log( "item= " + item + ";  result= " + result + ";  pred: " + predicate(item, index, arr) + ";  res= " + result&&predicate(item, index, arr));
-				return result = result && predicate(item, index, arr);
-			}, true)
-		}
 
 		window.onload = function(){
 			var people = [
@@ -101,23 +96,16 @@
 					"phone": "+1 (980) 583-2525"
 				}
 			];
-			var isAdult = function(man, i, arr){ // This is predicate
-				return man.age >= 18
-			}
-			var getPersonSummary = function(man, i, arr) { // This is mapper
-				return "\n" + man.name.toUpperCase() + " is " + man.age + " year old and his phone# is " + man.phone;
+
+
+			function reduceAgeToAverage(previousValue, currentValue, index, array){
+				return previousValue + currentValue.age/array.length;
 			}
 
-			// Test forEach
-			forEach(people, function(man, i, arr) {
-				console.log('forEach =>   ' + man.name)
-			});
+			// Test reduce
+			console.log("Average age calculated by developed reduce() is " + reduce(people, reduceAgeToAverage, 0));
+			console.log("Average age calculated by built-in reduce() is " + people.reduce(reduceAgeToAverage, 0));
 
-			console.log('map =>   ' + map(people, getPersonSummary));
-			console.log('filter =>   ');
-			console.log(filter(people, isAdult).sort(function(a,b){ return a.age - b.age }));
-			console.log('some =>   ' + some(people, isAdult));
-			console.log('every =>   ' + every(people, isAdult));
 		}
 	</script>
 </head>
