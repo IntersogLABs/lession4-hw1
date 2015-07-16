@@ -46,7 +46,7 @@
 		//own reduce
 		function reduce(arr, callback, initialValue) {
 			function foundFirstElement(index,arr){
-						if(arr[index] || index === arr.length - 1)return index;
+						if(arr[index] !== undefined || index === arr.length - 1)return index;
 						else return foundFirstElement(index + 1, arr);
 			}
 
