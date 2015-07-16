@@ -13,23 +13,102 @@
 
 	<script type="text/javascript">
 		function forEach(arr, iterator){
-			
+			arr.reduce(function (prevResult, current, index, arr) {
+				return iterator(current, index, arr);
+			},0);
 		}
 
 		function map(arr, mapper){
-			
+			var result = [];
+			arr.reduce(function (prevResult, current, index, arr) {
+				result.push(mapper(current, index, arr));
+			},0);
+			return result;
 		}
 
 		function filter(arr, predicate){
-			
+			var result = [];
+			arr.reduce(function (prevResult, current, index, arr) {
+				if(predicate(current, index, arr))
+					result.push(current);
+			},0);
+			return result;
 		}
 
+		/*
+		 * Реализовал две версии функции some().
+		 * Первая версия some() – в силу свойств логического ИЛИ предикат не будет вызываться
+		 * после получения первого true. Но reduce() все равно будет работать,
+		 * пока не переберет весь массив.
+		 * Вторая версия some2() – действие функции reduce() прерывается при получении
+		 * первого true. Это прерывание реализовано через бросание исключения из callback-функции reduce()
+		 * и его отлавливание в some2().
+		 * Этот способ завершения внешней функции из внутренней функции мы обсуждали
+		 * сегодня в разговоре после занятия.
+		*/
 		function some(arr, predicate){
-			
+			return arr.reduce(function (prevResult, current, index, arr) {
+				return prevResult || predicate(current, index, arr);
+			},false);
+		}
+
+		function some2(arr, predicate){
+			try {
+				return arr.reduce(function (prevResult, current, index, arr) {
+					if (prevResult || predicate(current, index, arr))
+						throw new Error("success");
+					else
+						return false;
+				}, false);
+			} catch(e){
+				if(e.message == "success")
+					return true;
+				else
+					throw e;
+			}
 		}
 
 		function every(arr, predicate){
-			
+			return arr.reduce(function (prevResult, current, index, arr) {
+				return prevResult && predicate(current, index, arr);
+			},true);
+		}
+
+		/*
+		 * Рекурсивная реализация функции reduce()
+		*/
+		function myReduce(arr, func, init) {
+			if (arr.length == 0 && init == undefined) throw TypeError;
+			if (arr.length == 1 && init == undefined) return arr[0];
+			if (arr.length == 0 && init != undefined) return init;
+			/*
+			 * Не очень понял фразу в MDN по поводу reduce():
+			 * «Если массив состоит только из одного элемента (независимо от его положения в массиве)
+			 * If the array has only one element (regardless of position)»
+			 * Наверное, имелось в виду: «Если массив содержит только один элемент, отличный
+			 * от undefined».
+			 * Если так, то необходимо предварительно пройтись по массиву, найти это не undefined значение
+			 * и вернуть его.
+			 */
+
+			var prevResult;
+			var index = arguments[3] || 0;
+			var maxIndex = arr.length - 1;
+
+			if (init != undefined) {
+				prevResult = init;
+			}
+			else {
+				prevResult = arr[0];
+				index = 1;
+			}
+
+			prevResult = func(prevResult, arr[index], index, arr);
+			index++;
+			if (index > maxIndex) {
+				return prevResult;
+			}
+			return myReduce(arr, func, prevResult, index);
 		}
 
 		window.onload = function(){
@@ -80,22 +159,36 @@
 					"phone": "+1 (980) 583-2525"
 				}
 			];
+
 			var isAdult = function(man, i, arr){ // This is predicate
 				return man.age >= 18
 			}
 			var getPersonSummary = function(man, i, arr) { // This is mapper
 				return man.name.toUpperCase() + " is " + man.age + " year old and his phone# is " + man.phone;
-			})
+			}
+
 
 			// Test forEach
 			forEach(people, function(man, i, arr) {
 				console.log(man.name)
-			};
+			});
 
-			// console.log(map(person, getPersonSummary));
-			// console.log(filter(person, isAdult));
-			// console.log(some(person, isAdult));
-			// console.log(every(person, isAdult));
+			function predicateForMyReduce(sum, element, i, arr){
+				return sum + element;
+			}
+
+			function predicateForMyReduce2(sum, element, i, arr){
+				return sum.concat(element);
+			}
+
+			console.log(map(people, getPersonSummary));
+			console.log(filter(people, isAdult));
+			console.log(some(people, isAdult));
+			console.log(some2(people, isAdult));
+			console.log(every(people, isAdult));
+
+			console.log(myReduce([1,2,3,4,5], predicateForMyReduce,0));
+			console.log(myReduce([[0, 1], [2, 3], [4, 5]], predicateForMyReduce2));
 		}
 	</script>
 </head>
