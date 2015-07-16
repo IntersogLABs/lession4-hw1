@@ -45,9 +45,12 @@
 
 		//own reduce
 		function reduce(arr, callback, initialValue) {
-			function foundFirstElement(index,arr){
-						if(arr[index] !== undefined || index === arr.length - 1)return index;
-						else return foundFirstElement(index + 1, arr);
+			function foundFirstElementIndex(index,arr){
+				if(arr[index] !== undefined || index === arr.length - 2){
+					return index;
+				} else {
+					return foundFirstElementIndex(index + 1, arr);
+				}
 			}
 
 			function accumulate(index, accum) {
@@ -61,7 +64,7 @@
 			var startIndex = 0;
 				
 				if(initialValue === undefined){
-					startIndex = foundFirstElement(0,arr);
+					startIndex = foundFirstElementIndex(0, arr);
 					initialValue = arr[startIndex];
 					startIndex++ ;
 				}
