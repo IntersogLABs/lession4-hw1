@@ -20,14 +20,18 @@
 
 		function map(arr, mapper){
 			return arr.reduce(function(map, value, index, arr) {
-				return map.concat( mapper(value, index, arr) )
+				 map.push( mapper(value, index, arr) )
+				 return map;
 			}, [])
 			
 		}
 
 		function filter(arr, predicate) {
-			return arr.reduce(function(filterArr, value, index, arr){
-				return predicate(value, index, arr) ? filterArr.concat(value) : filterArr
+			return arr.reduce(function(filteredArr, value, index, arr){
+				if( predicate(value, index, arr) ){
+						filteredArr.push(value)
+					} 
+					return filteredArr;
 			}, [])
 		}
 
@@ -43,13 +47,13 @@
 			},true)
 		}
 
-		//own reduce
+		//own reduce without loops
 		function reduce(arr, callback, initialValue) {
-			function foundFirstElementIndex(index,arr){
+			function foundNotUndefinedIndex(index,arr){
 				if(arr[index] !== undefined || index === arr.length - 2){
 					return index;
 				} else {
-					return foundFirstElementIndex(index + 1, arr);
+					return foundNotUndefinedIndex(index + 1, arr);
 				}
 			}
 
@@ -64,7 +68,7 @@
 			var startIndex = 0;
 				
 				if(initialValue === undefined){
-					startIndex = foundFirstElementIndex(0, arr);
+					startIndex = foundNotUndefinedIndex(0, arr);
 					initialValue = arr[startIndex];
 					startIndex++ ;
 				}
