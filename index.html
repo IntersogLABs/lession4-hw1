@@ -45,7 +45,10 @@
 
 		//own reduce
 		function reduce(arr, callback, initialValue) {
-			initialValue = initialValue || 0;
+				function foundFirstElement(index,arr){
+						if(arr[index] || index === arr.length - 1)return index;
+						else return foundFirstElement(index + 1, arr);
+				}
 
 			function accumulate(index, accum) {
 				if(index === arr.length - 1) {
@@ -54,8 +57,15 @@
 					return accumulate(index + 1, callback(accum, arr[index], index, arr) )
 				}
 			}
-
-			return accumulate(0, initialValue);
+				var startIndex;
+				
+				if(initialValue === undefined){
+					startIndex = foundFirstElement(0,arr);
+					initialValue = arr[startIndex];
+				}else{
+					startIndex = 0;
+				}
+			return accumulate(startIndex + 1 , initialValue);
 		}
 
 		window.onload = function(){
