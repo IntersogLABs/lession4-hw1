@@ -12,46 +12,43 @@
 
 
 	<script type="text/javascript">
-		function forEach(arr, iterator){
-			if (arr.length === 0) { return arr; };
-			arr.reduce(function(prevReturn, item, index, arr){
-				iterator(item, index, arr);
-			}, 0) 
+
+		function forEach(array,callback){
+			array.reduce(function(prev,curr,i,array){
+				callback(curr,i,array)
+			},0)
 		}
 
-		function map(arr, mapper){
-			if (arr.length === 0) { return arr; };
-			return arr.reduce(function(result, item, index, arr){
-				result.push(mapper(item, index, arr));
-				return result;
-			}, []) 
+		function map(array,callback){
+			return array.reduce(function(prev,curr,i,array){
+				return prev.concat([callback(curr,i,array)])
+			},[])
+  		}
+
+		function filter(array, callback){
+			return array.reduce(function(prev, curr, i, array){
+                return (callback(curr, i, array)) ? prev.concat(curr) : prev;
+			},[])
 		}
 
-		function filter(arr, predicate){
-			if (arr.length === 0) { return arr; }
-			return arr.reduce(function(result, item, index, arr) {
-				if (predicate(item, index, arr)) {
-					result.push(item);
-				};
-				return result;
-			}, [])
-		}
+        function some(array,callback){
+            var breakException = {};
+            try {
+                return array.reduce(function (prev, curr, i, array) {
+                      if (callback(curr, i, array)) throw breakException;
+                    return prev;
+                }, false)
+            } catch(er){
+                if (er !== breakException) throw er;
+                return true;
+            }
+        }
 
-		function some(arr, predicate){
-			if (arr.length === 0) { return arr; };
-			return arr.reduce(function(result, item, index, arr) {
-//				console.log( "item= " + item + ";  result= " + result + ";  pred: " + predicate(item, index, arr) + ";  res= " + result||predicate(item, index, arr));
-				return result = result || predicate(item, index, arr);
-			}, false)
-		}
-
-		function every(arr, predicate){
-			if (arr.length === 0) { return arr; };
-			return arr.reduce(function(result, item, index, arr) {
-//				console.log( "item= " + item + ";  result= " + result + ";  pred: " + predicate(item, index, arr) + ";  res= " + result&&predicate(item, index, arr));
-				return result = result && predicate(item, index, arr);
-			}, true)
-		}
+        function every(array,callback){
+            return !some(array,function(curr, i, array){
+                return !(callback(curr, i, array))
+            })
+        }
 
 		window.onload = function(){
 			var people = [
