@@ -12,50 +12,23 @@
 
 
 	<script type="text/javascript">
-		function reduce(array, callback/*, initialValue*/){
-			if (this == null) {
-				throw new TypeError('Array.prototype.reduce called on null or undefined');
-			}
-			if (typeof callback !== 'function') {
-				throw new TypeError(callback + ' is not a function');
-			}
-			
-			var array = Object(array), // Let's convert iterable to object anyway
-				previousValue,
-				index = 0
-			
-			// If initialValue were not provided - we should take first non-empty element as initialValue and continue from next after it
-			if (arguments.length === 3) {
-				previousValue = arguments[2];
-			} else {
-				while (index < array.length && !(index in array)) {
-					index++;
-				}
-				if (index >= array.length) {
-					throw TypeError("Reduce of empty array with no initial value")
-				}
-				previousValue = array[index]; // Take first non-empty
-				index++; // and start iterations from next after it
+
+		function reduce(array,callback,initial) {
+
+			var reduceRecursion = function (count, array, callback, initial) {
+				return array.length == count ? initial :
+						reduceRecursion(count + 1, array, callback, callback(initial, array[count], count, array))
 			};
 
-			return reduceInner(previousValue, index, callback);
-
-			function reduceInner(previousValue, index, callback){
-				var currentValue = array[index];
-				
-				if (index >= array.length) { // If we reached end of array
-					return previousValue     // Give all we have reduced atm
-				} 
-				if (!(index in array)) { // Reduce should skip holes in array but not 'undefined' items in array
-					return reduceInner(previousValue, ++index, callback); 
-				}
-
-
-					// If we still can try to make an iteration - make it
-					previousValue = callback(previousValue, currentValue, index, array);
-					return reduceInner(previousValue, ++index, callback);
+			var count = 0;
+			if (typeof initial === "undefined") {
+				if (array.length == 0) throw new TypeError('Reduce of empty array with no initial value');
+				initial = array[0];
+				count = 1;
 			}
+			return reduceRecursion(count, array, callback, initial)
 		}
+
 
 
 		window.onload = function(){
@@ -107,14 +80,15 @@
 				}
 			];
 
+//array = [1,2,3,4,5];
 
 			function reduceAgeToAverage(previousValue, currentValue, index, array){
 				return previousValue + currentValue.age/array.length;
 			}
 
 			// Test reduce
-			console.log("Average age calculated by developed reduce() is " + reduce(people, reduceAgeToAverage, 0));
-			console.log("Average age calculated by built-in reduce() is " + people.reduce(reduceAgeToAverage, 0));
+			console.log("Average age calculated by developed reduce() is " + reduce(people, reduceAgeToAverage,0));
+			console.log("Average age calculated by built-in reduce() is " + people.reduce(reduceAgeToAverage,0));
 
 		}
 	</script>
