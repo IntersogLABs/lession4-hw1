@@ -57,20 +57,41 @@
 				return "need array and function"
 			}
 			var isTrue = false;
-			arr.reduce(function(previousValue, currentValue, index, array){
-				if(predicate(currentValue)){
-					if(!isTrue)	{
-						isTrue = true;
+			try{
+				arr.reduce(function(previousValue, currentValue, index, array){ // блок try catch для того чтобы reduce при нахождении true не продолжал выполнение
+					console.log(1);
+					if(predicate(currentValue)){
+						
+						if(!isTrue)	{
+							isTrue = true;
+							throw new SyntaxError("Данные некорректны");
+
+						}
 					}
-				}
-				
-				
-			});	
+					
+					
+				});	
+			}
+			catch(e){
+			}
 			return isTrue;
 		}
 
 		function every(arr, predicate){
 			
+			var falseNumb = 0;
+			if(!Array.isArray(arr)||typeof predicate != 'function' ){
+				return "need array and function"
+			}
+			arr.reduce(function(previousValue, currentValue, index, array){
+				
+				if(!predicate(currentValue)){
+					falseNumb++;
+				}
+				
+				
+			});
+			return falseNumb === 0 ;	
 		}
 
 		window.onload = function(){
@@ -81,7 +102,7 @@
 					"phone": "+1 (942) 435-3036"
 				},
 				{
-					"age": 16,
+					"age": 23,
 					"name": "Jensen Goff",
 					"phone": "+1 (868) 415-2638"
 				},
@@ -96,27 +117,27 @@
 					"phone": "+1 (983) 432-2714"
 				},
 				{
-					"age": 4,
+					"age": 14,
 					"name": "Greta Hamilton",
 					"phone": "+1 (820) 450-2305"
 				},
 				{
-					"age": 1,
+					"age": 11,
 					"name": "Jordan Marks",
 					"phone": "+1 (983) 598-3316"
 				},
 				{
-					"age": 5,
+					"age": 15,
 					"name": "Whitley Bryan",
 					"phone": "+1 (811) 547-3266"
 				},
 				{
-					"age": 8,
+					"age": 12,
 					"name": "Bessie Drake",
 					"phone": "+1 (848) 473-3749"
 				},
 				{
-					"age": 25,
+					"age": 15,
 					"name": "Callie Schmidt",
 					"phone": "+1 (980) 583-2525"
 				}
@@ -129,14 +150,15 @@
 			};
 
 			// Test forEach
-			forEach(people, function(man, i, arr) {
+			/*forEach(people, function(man, i, arr) {
 				console.log(man.name);
-			})
+			})*/
 
-			console.log(map(people, getPersonSummary));
-			console.log(filter(people, isAdult));
+			//console.log(map(people, getPersonSummary));
+			//console.log(filter(people, isAdult));
 			console.log(some(people, isAdult));
-			// console.log(every(person, isAdult));
+			//console.log(every(people, isAdult));
+			
 		}
 	</script>
 </head>
